@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     #Django Rest Framework 사용
     'rest_framework',
 
+    #Swagger 사용
+    'drf_yasg',
+
     #Account Registration / Login을 내장된 기능으로 사용.
     'django.contrib.sites',
     'rest_auth.registration',
