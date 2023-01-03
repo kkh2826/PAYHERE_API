@@ -6,12 +6,22 @@ class Financeledgerlist(models.Model):
     email = models.CharField(max_length=50)
     seq = models.IntegerField()
     amount = models.BigIntegerField()
-    memo = models.CharField(max_length=50, blank=True, null=True)
-    paytype = models.IntegerField(db_column='payType')  # Field name made lowercase.
-    createdate = models.DateTimeField(db_column='createDate')  # Field name made lowercase.
-    updatedate = models.DateTimeField(db_column='updateDate')  # Field name made lowercase.
-
+    paytype = models.IntegerField(db_column='payType', default=0)  # Field name made lowercase.
+    
     class Meta:
         managed = False
         db_table = 'financeledgerlist'
         unique_together = (('stddate', 'email', 'seq'),)
+
+class Financeledgerdetail(models.Model):
+    # stddate = models.DateField(db_column='stdDate', primary_key=True)  # Field name made lowercase.
+    # email = models.CharField(max_length=50)
+    # seq = models.IntegerField()
+    financeledger = models.ForeignKey(Financeledgerlist, on_delete=models.CASCADE)
+    memo = models.CharField(max_length=1000, blank=True, null=True)
+    createdate = models.DateTimeField(db_column='createDate', auto_now_add=True)  # Field name made lowercase.
+    updatedate = models.DateTimeField(db_column='updateDate', auto_now=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'financeledgerdetail'
