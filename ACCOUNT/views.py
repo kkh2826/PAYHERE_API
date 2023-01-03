@@ -67,3 +67,46 @@ class RegisterAccount(APIView):
             return Response(result, content_type='application/json')
 
         return Response(result, content_type='application/json')
+
+
+'''
+    로그인
+'''
+class LoginAccount(APIView):
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+
+        result = InitResult()
+        token = ''
+
+        data = json.loads(request.body)
+
+        email = data['email']
+        password = data['password']
+
+ 
+        user = Userinfo.objects.get(
+            email = email,
+            # password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt())
+            password = password
+        )
+
+        if user is None:
+            result['success'] = False
+            result['message'] = '이메일 또는 비밀번호를 확인해주세요.'
+        else:
+            try:
+                payload = JWT_PAYLOAD_HANDLER(user)
+                token = JWT_ENCODE_HANDLER(payload)
+            except:
+                result['success'] = False
+                result['message'] = '토큰의 정보를 가져오지 못했습니다.'
+
+        userinfo = UserSerializer(user, data)
+        if userinfo.is_valid():
+            result['email'] = email
+            result['token'] = token
+
+        return Response(result, content_type='application/json')
