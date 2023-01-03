@@ -61,9 +61,11 @@ class FinanceLedger(APIView):
                 result['success'] = True
                 result['message'] = "가계부를 입력하였습니다."
             else:
+                print('is_valid 에러')
                 result['success'] = False
                 result['message'] = financeLedger.error_messages
         except:
+            print('is_valid 전')
             result['success'] = False
             result['message'] = financeLedger.error_messages
             return Response(result, content_type='application/json')

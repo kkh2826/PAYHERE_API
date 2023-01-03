@@ -14,10 +14,7 @@ class Financeledgerlist(models.Model):
         unique_together = (('stddate', 'email', 'seq'),)
 
 class Financeledgerdetail(models.Model):
-    # stddate = models.DateField(db_column='stdDate', primary_key=True)  # Field name made lowercase.
-    # email = models.CharField(max_length=50)
-    # seq = models.IntegerField()
-    financeledger = models.ForeignKey(Financeledgerlist, on_delete=models.CASCADE)
+    financeledger = models.OneToOneField(Financeledgerlist, on_delete=models.CASCADE, related_name='details')
     memo = models.CharField(max_length=1000, blank=True, null=True)
     createdate = models.DateTimeField(db_column='createDate', auto_now_add=True)  # Field name made lowercase.
     updatedate = models.DateTimeField(db_column='updateDate', auto_now=True)  # Field name made lowercase.
