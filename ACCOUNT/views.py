@@ -44,9 +44,8 @@ class RegisterAccount(APIView):
 
         data = json.loads(request.body)
 
+        data['password'] = bcrypt.hashpw(data['password'].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
         email = data['email']
-        password = bcrypt.hashpw(data['password'].encode("UTF-8"), bcrypt.gensalt())
-        username = data['username']
 
         try:
             if Userinfo.objects.filter(email=email).exists():
@@ -55,15 +54,15 @@ class RegisterAccount(APIView):
                 return Response(result, content_type='application/json')
            
             userinfo = UserSerializer(data=data)    
-
+            
             if userinfo.is_valid():
                 userinfo.save()
                 result['email'] = email
                 result['success'] = True
                 result['message'] = "정상적으로 회원가입 되었습니다."
-
-            
         except:
+            result['success'] = False
+            result['message'] = userinfo.errors
             return Response(result, content_type='application/json')
 
         return Response(result, content_type='application/json')
@@ -86,27 +85,26 @@ class LoginAccount(APIView):
         email = data['email']
         password = data['password']
 
- 
         user = Userinfo.objects.get(
-            email = email,
-            # password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt())
-            password = password
+            email = email
         )
 
         if user is None:
             result['success'] = False
-            result['message'] = '이메일 또는 비밀번호를 확인해주세요.'
+            result['message'] = "존재하지 않는 이메일입니다."
         else:
-            try:
-                payload = JWT_PAYLOAD_HANDLER(user)
-                token = JWT_ENCODE_HANDLER(payload)
-            except:
+            if bcrypt.checkpw(password.encode("UTF-8"), user.password.encode("UTF-8")):
+                try:
+                    payload = JWT_PAYLOAD_HANDLER(user)
+                    token = JWT_ENCODE_HANDLER(payload)
+                except:
+                    result['success'] = False
+                    result['message'] = "토큰의 정보를 가져오지 못했습니다."
+                    
+                result['email'] = email
+                result['token'] = token        
+            else:
                 result['success'] = False
-                result['message'] = '토큰의 정보를 가져오지 못했습니다.'
-
-        userinfo = UserSerializer(user, data)
-        if userinfo.is_valid():
-            result['email'] = email
-            result['token'] = token
+                result['message'] = "비밀번호를 확인해주세요."
 
         return Response(result, content_type='application/json')
