@@ -11,6 +11,7 @@ from django.db.models import Max
 from .models import Financeledgerlist
 from .serializers import FinanceLedgerSerializer
 
+from PAYHERE.decorator.decorators import JWTAuthorized
 
 '''
     결과값 초기화 함수
@@ -40,9 +41,7 @@ def Get_Seq(stddate, email):
 '''
 class FinanceLedger(APIView):
 
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JSONWebTokenAuthentication]
-
+    @JWTAuthorized
     def post(self, request):
 
         result = InitResult()
@@ -62,6 +61,8 @@ class FinanceLedger(APIView):
             if financeLedger.is_valid():
                 financeLedger.save()
         except:
+            result['success'] = False
+            result['message'] = financeLedger.errors
             return Response(result, content_type='application/json')
 
 
