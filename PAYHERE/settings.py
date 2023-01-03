@@ -55,6 +55,7 @@ INSTALLED_APPS = [
 
     'API',
     'ACCOUNT',
+    'FINANCELEDGER',
 ]
 
 MIDDLEWARE = [
