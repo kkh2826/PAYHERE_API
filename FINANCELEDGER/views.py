@@ -1,7 +1,4 @@
-from rest_framework import serializers
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.response import Response
 
 import json
@@ -31,10 +28,12 @@ def Get_Seq(stddate, email):
 
     financeInfo = Financeledgerlist.objects.filter(stddate=stddate, email=email)
 
-    if financeInfo is None:
+    if financeInfo.count() == 0:
         return 1
     else:
-        return financeInfo.aggregate(Max('seq'))
+        fianceInfo = financeInfo.aggregate(seq=Max('seq')+1)
+        seq = fianceInfo['seq']
+        return seq
 
 '''
     가계부
@@ -47,22 +46,29 @@ class FinanceLedger(APIView):
         result = InitResult()
 
         data = json.loads(request.body)
-
+        
         today = datetime.datetime.now()
 
         stddate = today.date()
         email = data['email']
-        seq = Get_Seq(stddate=stddate, email=email)
-        amount = data['amount']
-        paytype = 0
+        data['seq'] = Get_Seq(stddate=stddate, email=email)
 
         try:
             financeLedger = FinanceLedgerSerializer(data=data)
+            
             if financeLedger.is_valid():
                 financeLedger.save()
+                result['success'] = True
+                result['message'] = "가계부를 입력하였습니다."
+            else:
+                result['success'] = False
+                result['message'] = financeLedger.error_messages
         except:
             result['success'] = False
-            result['message'] = financeLedger.errors
+            result['message'] = financeLedger.error_messages
             return Response(result, content_type='application/json')
+
+        return Response(result, content_type='application/json')
+        
 
 

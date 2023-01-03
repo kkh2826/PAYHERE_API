@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Financeledgerlist(models.Model):
-    stddate = models.DateField(db_column='stdDate', primary_key=True)  # Field name made lowercase.
+    stddate = models.DateField(db_column='stdDate')  # Field name made lowercase.
     email = models.CharField(max_length=50)
     seq = models.IntegerField()
     amount = models.BigIntegerField()

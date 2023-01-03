@@ -11,17 +11,17 @@ class FinanceLedgerDetailSerializer(serializers.ModelSerializer):
 
 class FinanceLedgerSerializer(serializers.ModelSerializer):
 
-    detail = FinanceLedgerDetailSerializer()
+    #detail = FinanceLedgerDetailSerializer()
 
     class Meta:
         model = Financeledgerlist
         fields = ['stddate', 'email', 'seq', 'amount', 'paytype']
 
-    def create(self, validated_data):
-        detail = validated_data.pop('detail', None)
-        item = Financeledgerlist(**validated_data)
-        item.save()
-        Financeledgerdetail.objects.create(financeledger=item)
+    # def create(self, validated_data):
+    #     #detail = validated_data.pop('detail', None)
+    #     item = Financeledgerlist(**validated_data)
+    #     item.save()
+    #     Financeledgerdetail.objects.create(financeledger=item)
 
-        return item
+    #     return item
 
