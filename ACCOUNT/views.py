@@ -93,7 +93,30 @@ class RegisterAccount(APIView):
     로그인
 '''
 class LoginAccount(APIView):
-
+    # Swagger Description (로그인)
+    @swagger_auto_schema(
+        operation_id='가계부 로그인',
+        operation_description='로그인을 진행합니다.',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호"),
+            },
+        ),
+        responses={200: openapi.Response(
+            description="200 OK",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+                    'token': openapi.Schema(type=openapi.TYPE_STRING, description="토큰값"),
+                    'success': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="실행결과"),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description="에러메세지"),
+                }
+            )
+        )}
+    )
     def post(self, request):
 
         result = InitResult()
