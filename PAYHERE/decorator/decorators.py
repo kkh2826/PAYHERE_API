@@ -11,7 +11,8 @@ def JWTAuthorized(func):
 
             payload = jwt.decode(access_token, "secretJWTkey", algorithm='HS256')  
 
-            user = Userinfo.objects.get(email=payload['id'])                 
+            user = Userinfo.objects.get(email=payload['id'])
+            
             request.user = user          
                                        
         except jwt.exceptions.DecodeError:                                  

@@ -84,6 +84,7 @@ class LoginAccount(APIView):
             result['message'] = "존재하지 않는 이메일입니다."
         else:
             if bcrypt.checkpw(password.encode("UTF-8"), user.password.encode("UTF-8")):
+                print(bcrypt.checkpw(password.encode("UTF-8"), user.password.encode("UTF-8")))
                 try:
                     # payload = JWT_PAYLOAD_HANDLER(user)
                     # token = JWT_ENCODE_HANDLER(payload)

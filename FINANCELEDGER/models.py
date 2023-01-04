@@ -9,7 +9,6 @@ class Financeledgerlist(models.Model):
     paytype = models.IntegerField(db_column='payType', default=0)  # Field name made lowercase.
     
     class Meta:
-        managed = False
         db_table = 'financeledgerlist'
         unique_together = (('stddate', 'email', 'seq'),)
 
@@ -20,5 +19,4 @@ class Financeledgerdetail(models.Model):
     updatedate = models.DateTimeField(db_column='updateDate', auto_now=True)  # Field name made lowercase.
 
     class Meta:
-        managed = False
         db_table = 'financeledgerdetail'

@@ -47,11 +47,11 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     #Account Registration / Login을 내장된 기능으로 사용.
-    'django.contrib.sites',
-    'rest_auth.registration',
-    'rest_framework.authtoken',
-    'allauth',
-    'allauth.account',
+    # 'django.contrib.sites',
+    # 'rest_auth.registration',
+    # 'rest_framework.authtoken',
+    # 'allauth',
+    # 'allauth.account',
 
     'API',
     'ACCOUNT',
