@@ -9,7 +9,11 @@ import datetime
 from .models import Userinfo
 from .serializers import UserSerializer
 
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 # Create your views here.
+
+
 
 '''
     결과값 초기화 함수
@@ -28,8 +32,33 @@ def InitResult() :
 '''
     회원가입
 '''
-class RegisterAccount(APIView):
 
+class RegisterAccount(APIView):
+    # Swagger Description (회원가입)
+    @swagger_auto_schema(
+        operation_id='가계부 회원가입',
+        operation_description='회원가입을 진행합니다.',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description="비밀번호"),
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description="이름"),
+            },
+        ),
+        responses={200: openapi.Response(
+            description="200 OK",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+                    'token': openapi.Schema(type=openapi.TYPE_STRING, description="토큰값", default=""),
+                    'success': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="실행결과"),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description="에러메세지"),
+                }
+            )
+        )}
+    )
     def post(self, request):
 
         result = InitResult()
