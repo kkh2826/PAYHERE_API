@@ -19,7 +19,11 @@ class FinanceLedgerSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         print(validated_data)
-        return Financeledgerlist.objects.create(**validated_data)
+        finance = Financeledgerlist.objects.create(**validated_data)
+        detail = Financeledgerdetail.objects.create(
+            financeledger=finance
+        )
+        return finance
 
     
 

@@ -46,7 +46,7 @@ class FinanceLedger(APIView):
         result = InitResult()
 
         data = json.loads(request.body)
-        
+        print(request.data)
         today = datetime.datetime.now()
 
         stddate = today.date()
