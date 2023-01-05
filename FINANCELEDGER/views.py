@@ -142,7 +142,12 @@ class FinanceLedger(APIView):
     가계부 Detail
 '''
 class FinanceLedgerDetail(APIView):
-
+    # Swagger Description (가계부 세부사항 조회)
+    @swagger_auto_schema(
+        operation_id='가계부 세부사항 조회',
+        operation_description='가게부 입력된 항목에 대해 세부사항을 보여줍니다.',
+        manual_parameters=[parameter_token],
+    )
     @JWTAuthorized
     def get(self, request, pk):
 
