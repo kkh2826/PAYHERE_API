@@ -199,6 +199,59 @@ class FinanceLedger(APIView):
 
         return Response(result, content_type='application/json')
 
+
+    # Swagger Description (가계부 입력)
+    @swagger_auto_schema(
+        operation_id='가계부 삭제',
+        operation_description='가게부를 삭제합니다. (가게부 상세사항까지 모두 삭제)',
+        manual_parameters=[parameter_token],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'stddate': openapi.Schema(type=openapi.TYPE_STRING, description="날짜"),
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+                'seq': openapi.Schema(type=openapi.TYPE_INTEGER, description="순서"),
+            },
+        ),
+        responses={200: openapi.Response(
+            description="200 OK",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'success': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="실행결과"),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description="실행결과메세지"),
+                }
+            )
+        )}
+    )
+    @JWTAuthorized
+    def delete(self, request):
+
+        result = InitResult()
+
+        data = json.loads(request.body)
+
+        stddate = data['stddate']
+        email = data['email']
+        seq = data['seq']
+
+        finance = Financeledgerlist.objects.get(
+            stddate=stddate,
+            email=email,
+            seq=seq
+        )
+
+        try:
+            finance.delete()
+  
+            result['success'] = True
+            result['message'] = "가게부 정보를 삭제하였습니다."
+        except Exception as e:
+            result['success'] = False
+            result['message'] = e
+
+        return Response(result, content_type='application/json')
+
 '''
     가계부 Detail
 '''
