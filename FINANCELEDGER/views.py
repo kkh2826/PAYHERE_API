@@ -138,6 +138,41 @@ class FinanceLedger(APIView):
         return Response(serializer.data, content_type='application/json')
 
 
+    @JWTAuthorized
+    def put(self, request):
+
+        result = InitResult()
+
+        data = json.loads(request.body)
+
+        stddate = data['stddate']
+        email = data['email']
+        seq = data['seq']
+
+        finance = Financeledgerlist.objects.get(
+            stddate=stddate,
+            email=email,
+            seq=seq
+        )
+        detail = Financeledgerdetail.objects.get(financeledger_id=finance.pk)
+        
+        try:
+            serializer = FinanceLedgerSerializer(finance, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                detail.save(
+                    update_fields=['updatedate']
+                )
+  
+                result['success'] = True
+                result['message'] = "가게부 정보를 수정하였습니다."
+                
+        except:
+            result['success'] = False
+            result['message'] = serializer.error_messages
+
+        return Response(result, content_type='application/json')
+
 '''
     가계부 Detail
 '''
