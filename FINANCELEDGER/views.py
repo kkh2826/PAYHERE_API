@@ -1,6 +1,5 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 
 import json
 import datetime
@@ -37,6 +36,7 @@ def InitResult() :
 
 '''
     seq값 구하기
+    같은 PK에 대하여 Seq의 값을 자동으로 증가시키기 위한 Method
 '''
 def Get_Seq(stddate, email):
 
@@ -100,11 +100,9 @@ class FinanceLedger(APIView):
                 result['success'] = True
                 result['message'] = "가계부를 입력하였습니다."
             else:
-                print('is_valid 에러')
                 result['success'] = False
                 result['message'] = financeLedger.error_messages
         except:
-            print('is_valid 전')
             result['success'] = False
             result['message'] = financeLedger.error_messages
             return Response(result, content_type='application/json')

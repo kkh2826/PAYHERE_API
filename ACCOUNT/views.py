@@ -65,6 +65,7 @@ class RegisterAccount(APIView):
 
         data = json.loads(request.body)
 
+        # 비밀번호에 대하여 암호화 시켜서 저장하기 위한 과정 (bcrypt 모듈)
         data['password'] = bcrypt.hashpw(data['password'].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
         email = data['email']
 
@@ -136,10 +137,7 @@ class LoginAccount(APIView):
             result['message'] = "존재하지 않는 이메일입니다."
         else:
             if bcrypt.checkpw(password.encode("UTF-8"), user.password.encode("UTF-8")):
-                print(bcrypt.checkpw(password.encode("UTF-8"), user.password.encode("UTF-8")))
                 try:
-                    # payload = JWT_PAYLOAD_HANDLER(user)
-                    # token = JWT_ENCODE_HANDLER(payload)
                     payload = {
                         'id': email,
                         'exp': datetime.datetime.now() + datetime.timedelta(days=1),
@@ -156,7 +154,9 @@ class LoginAccount(APIView):
                     result['message'] = "토큰의 정보를 가져오지 못했습니다."
                     
                 result['email'] = email
-                result['token'] = token        
+                result['token'] = token 
+                result['success'] = True
+                result['message'] = "로그인 성공"
             else:
                 result['success'] = False
                 result['message'] = "비밀번호를 확인해주세요."

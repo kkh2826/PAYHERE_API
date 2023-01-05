@@ -1,8 +1,5 @@
 from .models import Financeledgerlist, Financeledgerdetail
 from rest_framework import serializers
-import datetime
-
-
 
 
 class FinanceLedgerDetailSerializer(serializers.ModelSerializer):
@@ -26,16 +23,7 @@ class FinanceLedgerSerializer(serializers.ModelSerializer):
         )
         return finance
 
-    # def update(self, instance, validated_data):
-    #     print(validated_data)
-    #     print('여기 들어오니')
-    #     print(instance)
-    #     instance.updatedate = datetime.datetime.now()
-    #     instance.save()
-    #     detail = Financeledgerdetail.objects.update(
-    #         financeledger=instance
-    #     )
-    #     return instance
+
 
     
 
