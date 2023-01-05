@@ -8,7 +8,7 @@ class FinanceLedgerDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Financeledgerdetail
-        fields = ['financeledger']
+        fields = [ 'memo', 'createdate', 'updatedate']
 
 
 class FinanceLedgerSerializer(serializers.ModelSerializer):

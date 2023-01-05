@@ -1,17 +1,28 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 
 import json
 import datetime
 
 from django.db.models import Max
-from .models import Financeledgerlist
-from .serializers import FinanceLedgerSerializer
+from .models import Financeledgerlist, Financeledgerdetail
+from .serializers import FinanceLedgerSerializer, FinanceLedgerDetailSerializer
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from PAYHERE.decorator.decorators import JWTAuthorized
+
+'''
+    Swagger에서 공통적으로 Authorization(Header)에 적용시켜야 하는 JWT Token 정보
+'''
+parameter_token = openapi.Parameter(
+    "Authorization",
+    openapi.IN_HEADER,
+    description="JWT Token",
+    type=openapi.TYPE_STRING
+)
 
 '''
     결과값 초기화 함수
@@ -46,6 +57,7 @@ class FinanceLedger(APIView):
     @swagger_auto_schema(
         operation_id='가계부 입력',
         operation_description='가게부에 입력합니다.',
+        manual_parameters=[parameter_token],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -73,7 +85,7 @@ class FinanceLedger(APIView):
         result = InitResult()
 
         data = json.loads(request.body)
-        print(request.data)
+        
         today = datetime.datetime.now()
 
         stddate = today.date()
@@ -98,6 +110,43 @@ class FinanceLedger(APIView):
             return Response(result, content_type='application/json')
 
         return Response(result, content_type='application/json')
+
+    
+    # Swagger Description (가계부 조회)
+    email = openapi.Parameter('email', openapi.IN_QUERY, description="이메일", type=openapi.TYPE_STRING, required=True)
+    stddate = openapi.Parameter('stddate', openapi.IN_QUERY, description="기준일", type=openapi.TYPE_STRING, required=False)
+    @swagger_auto_schema(
+        operation_id='가계부 조회',
+        operation_description='로그인된 회원의 가계부를 조회합니다.',
+        manual_parameters=[parameter_token, email, stddate]
+    )
+    @JWTAuthorized
+    def get(self, request):
+        queryset = Financeledgerlist.objects.all()
         
+        if request.query_params:
+            email = request.query_params.get('email')
+            stddate = request.query_params.get('stddate', None)
+            
+            if stddate is None:
+                queryset = queryset.filter(email=email, stddate=datetime.datetime.now().date())
+            else:
+                queryset = queryset.filter(email=email, stddate=stddate)
+        
+        serializer = FinanceLedgerSerializer(queryset, many=True)
+
+        return Response(serializer.data, content_type='application/json')
 
 
+'''
+    가계부 Detail
+'''
+class FinanceLedgerDetail(APIView):
+
+    @JWTAuthorized
+    def get(self, request, pk):
+
+        detail = Financeledgerdetail.objects.get(financeledger_id=pk)
+        serializer = FinanceLedgerDetailSerializer(detail)
+
+        return Response(serializer.data, content_type='application/json')
