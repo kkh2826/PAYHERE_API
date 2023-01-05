@@ -138,6 +138,32 @@ class FinanceLedger(APIView):
         return Response(serializer.data, content_type='application/json')
 
 
+    # Swagger Description (가계부 입력)
+    @swagger_auto_schema(
+        operation_id='가계부 수정',
+        operation_description='가게부를 수정합니다.',
+        manual_parameters=[parameter_token],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'stddate': openapi.Schema(type=openapi.TYPE_STRING, description="날짜"),
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description="이메일"),
+                'seq': openapi.Schema(type=openapi.TYPE_INTEGER, description="순서"),
+                'amount': openapi.Schema(type=openapi.TYPE_INTEGER, description="금액"),
+                'paytype': openapi.Schema(type=openapi.TYPE_INTEGER, description="결제방법"),
+            },
+        ),
+        responses={200: openapi.Response(
+            description="200 OK",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'success': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="실행결과"),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description="실행결과메세지"),
+                }
+            )
+        )}
+    )
     @JWTAuthorized
     def put(self, request):
 
