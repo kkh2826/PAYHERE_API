@@ -155,3 +155,52 @@ class FinanceLedgerDetail(APIView):
         serializer = FinanceLedgerDetailSerializer(detail)
 
         return Response(serializer.data, content_type='application/json')
+
+
+    # Swagger Description (가계부 세부사항 수정)
+    @swagger_auto_schema(
+        operation_id='가계부 세부사항 수정',
+        operation_description='가게부 입력된 항목에 대해 세부사항을 수정합니다.',
+        manual_parameters=[parameter_token],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'memo': openapi.Schema(type=openapi.TYPE_STRING, description="메모"),
+                'createdate': openapi.Schema(type=openapi.TYPE_STRING, description="최초생성시간"),
+                'updatedate': openapi.Schema(type=openapi.TYPE_INTEGER, description="수정된시간"),
+            },
+        ),
+        responses={200: openapi.Response(
+            description="200 OK",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'success': openapi.Schema(type=openapi.TYPE_BOOLEAN, description="실행결과"),
+                    'message': openapi.Schema(type=openapi.TYPE_STRING, description="실행결과메세지"),
+                }
+            )
+        )}
+    )
+    @JWTAuthorized
+    def put(self, request, pk):
+
+        result = InitResult()
+
+        detail = Financeledgerdetail.objects.get(financeledger_id=pk)
+        data = json.loads(request.body)
+        
+        try:
+            serializer = FinanceLedgerDetailSerializer(detail, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                result['success'] = True
+                result['message'] = "가계부 세부사항을 수정하였습니다."
+            else:
+                result['success'] = False
+                result['message'] = serializer.error_messages
+        except:
+            result['success'] = False
+            result['message'] = serializer.error_messages
+        
+
+        return Response(result, content_type='application/json')
